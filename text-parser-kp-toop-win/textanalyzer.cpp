@@ -19,7 +19,6 @@
 #include "utils.h"
 #include <windows.h>
 #include <boost/locale/util.hpp>
-#include <limits>
 
 namespace std
 {
@@ -75,13 +74,9 @@ namespace std
                     return false;
                 }
             }
-            else if (iswdigit(c) && !iswspace(c))
-            {
-                hasAlpha = !settings.getRules(L"ignoreNumbers") && !settings.getRules(L"ignoreSpecialChars");
-            }
-            else
-            {
-                return false;
+            else  if ((!settings.getRules(L"ignoreNumbers") && iswdigit(c)) ||
+                (!settings.getRules(L"ignoreSpecialChars") && !iswspace(c) && !iswalnum(c))) {
+                hasAlpha = true;
             }
         }
 
@@ -114,26 +109,15 @@ namespace std
     }
 
     wstring TextAnalyzer::processWord(wstring word) const {
-        using namespace boost::locale;
-        static generator gen;
-        static locale loc = gen("ru_RU.UTF-8");
-
         wstring processed;
-        for (wchar_t c : word) {
-            if (isalpha(c, loc)) {
-                if (settings.getRules(L"caseInsensitive")) {
-                    // Преобразуем символ в строку, чтобы использовать to_lower
-                    wstring singleChar(1, c);
-                    singleChar = to_lower(singleChar, loc);
-                    processed += singleChar[0]; // Возвращаем первый символ из результата
-                }
-                else {
-                    processed += c;
-                }
-            }
-            else {
+        for (const wchar_t& c : word)
+        {
+            if (iswalpha(c))
+                processed += settings.getRules(L"caseInsensitive") ? towlower(c) : c;
+            else
+            {
                 if ((!settings.getRules(L"ignoreNumbers") && iswdigit(c)) ||
-                    (!settings.getRules(L"ignoreSpecialChars") && !iswspace(c))) {
+                    (!settings.getRules(L"ignoreSpecialChars") && !iswspace(c) && !iswalnum(c))) {
                     processed += c;
                 }
             }
@@ -187,6 +171,8 @@ namespace std
     {
         try
         {
+            wcout << L"DEBUG: Очистка предыдущих результатов " << endl;
+            results.clear();
             wcout << L"DEBUG: Начало анализа для " << sourceIdentifier << endl;
             wcout << L"DEBUG: Текущие настройки: " << endl;
             wcout << L"Регистронезависимость: " << (settings.getRules(L"caseInsensitive") ? L"Включено" : L"Выключено") << endl;
@@ -619,6 +605,7 @@ namespace std
                         std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                         return;
                     }
+                    std::wcin.clear();
                     sub_ch = std::stoi(choice);
                     settings.changeRules(L"caseInsensitive", (sub_ch == 1));
                     break;
@@ -631,6 +618,7 @@ namespace std
                         std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                         return;
                     }
+                    std::wcin.clear();
                     sub_ch = std::stoi(choice);
                     settings.changeRules(L"ignoreNumbers", (sub_ch == 1));
                     break;
@@ -643,6 +631,7 @@ namespace std
                         std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                         return;
                     }
+                    std::wcin.clear();
                     sub_ch = std::stoi(choice);
                     settings.changeRules(L"ignoreSpecialChars", (sub_ch == 1));
                     break;
@@ -658,20 +647,24 @@ namespace std
                         std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                         return;
                     }
+                    std::wcin.clear();
                     sub_ch = std::stoi(choice);
                     settings.changeRules(L"ignoreStopWords", (sub_ch == 1));
                     break;
                 case 6: {
+                    std::wcin.clear(); // Сбросить флаги ошибок
+                    std::wcin.ignore(1000000, L'\n'); // Игнорировать до 1 000 000 символов или до '\n'
                     wcout << L"Введите новое стоп-слово: ";
                     wstring stopWord;
                     std::getline(std::wcin, stopWord);
 
                     if (std::wcin.fail()) {
                         std::wcin.clear(); // Сбросить флаги ошибок
-                        std::wcin.sync();   // Очистить буфер
+                        std::wcin.sync();  // Очистить буфер
                         std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                         continue;
                     }
+
                     if (stopWord.empty()) {
                         wcout << L"Пусто (введите корректное стоп-слово).\n";
                         break;
