@@ -109,11 +109,16 @@ namespace std
     }
 
     wstring TextAnalyzer::processWord(wstring word) const {
+        // Инициализация Boost.Locale
+        boost::locale::generator gen;
+        std::locale loc = gen("ru_RU.UTF-8"); // Установка локали для поддержки кириллицы
+        std::locale::global(loc); // Установка глобальной локали
+
         wstring processed;
         for (const wchar_t& c : word)
         {
             if (iswalpha(c))
-                processed += settings.getRules(L"caseInsensitive") ? towlower(c) : c;
+                processed += settings.getRules(L"caseInsensitive") ? boost::locale::to_lower(std::wstring(1, c), loc) : std::wstring(1, c);
             else
             {
                 if ((!settings.getRules(L"ignoreNumbers") && iswdigit(c)) ||
