@@ -28,5 +28,5 @@
 #include "filemanager.h"
 #include "analysissettings.h"
 #include "textaanalyzer.h"
-
+#include "utils.h"
 #endif /* CORE_H */

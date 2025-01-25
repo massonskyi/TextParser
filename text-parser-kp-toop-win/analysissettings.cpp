@@ -70,9 +70,17 @@ namespace std {
     AnalysisSettings::setWorkingDirectory(const wstring& directory) {
         workingDirectory = directory;
     }
+    void
+    AnalysisSettings::addToBackAlphabet(const wstring& new_word) {
+	    allowedAlphabet += new_word;
+    }
 
+    void
+    AnalysisSettings::setNewAlphabet(const wstring& newAlphabet) {
+		allowedAlphabet = newAlphabet;
+    }
     wstring
-    AnalysisSettings::getWorkingDirectory() const {
+        AnalysisSettings::getWorkingDirectory() const {
         return workingDirectory;
     }
 }

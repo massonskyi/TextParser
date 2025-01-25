@@ -133,28 +133,40 @@ void showMenu()
 wstring chooseDirectory(const TextAnalyzer &analyzer)
 {
     wstring directory;
-    int choice;
-
+    wstring choice;
+    int ch;
     // Предложение выбора
     std::wcout << L"Выберите действие:\n";
     std::wcout << L"1. Использовать текущую директорию\n";
     std::wcout << L"2. Указать новую директорию\n";
     std::wcout << L"Ваш выбор: ";
     std::wcin >> choice;
-    std::wcin.ignore(); // Игнорируем оставшийся символ новой строки
+    if (!isValidString(choice)) {
+        std::wcin.clear(); // Сбросить флаги ошибок
+        std::wcin.sync();   // Очистить буфер
+        std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+        return L"";
+    }
+    ch = std::stoi(choice);
 
     // Обработка выбора
-    if (choice == 1)
+    if (ch == 1)
     {
         directory = analyzer.getCurrentDirectory();
         std::wcout << L"Используется текущая директория: " << directory << L"\n";
     }
-    else if (choice == 2)
+    else if (ch == 2)
     {
         // Указать новую директорию
         std::wcout << L"Введите путь к директории: ";
+        std::wcin.ignore(1000, L'\n');  // Фиксированное большое число
         std::getline(std::wcin, directory);
-
+        if (std::wcin.fail()) {
+            std::wcin.clear(); // Сбросить флаги ошибок
+            std::wcin.sync();   // Очистить буфер
+            std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+            return L"";
+        }
         // Проверка существования директории
         if (!std::filesystem::exists(directory))
         {
@@ -185,25 +197,26 @@ int main()
     settings.changeRules(L"ignoreStopWords", false);
     settings.allowedAlphabet = L"абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЮЯ";
     settings.stopWords = { L"и", L"в", L"не", L"на", L"с" };
-    settings.workingDirectory = L"../data/";
+    settings.workingDirectory = L"data/";
     TextAnalyzer analyzer(settings);
 
-    int choice;
+    wstring choice;
+    int ch;
     while (true)
     {
         showMenu();
         try
         {
             std::wcout << L"Выберите опцию: ";
-            if (!(std::wcin >> choice))
-            {
-                std::wcin.clear();
-                std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
-                std::wcout << L"Неверный ввод. Пожалуйста, введите число.\n";
+            std::wcin >> choice;
+            if (!isValidString(choice)) {
+                std::wcin.clear(); // Сбросить флаги ошибок
+                std::wcin.sync();   // Очистить буфер
+                std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                 continue;
             }
-
-            std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
+            std::wcin.ignore(1000, L'\n');  // Фиксированное большое число
+			ch = std::stoi(choice);
         }
         catch (const std::exception &e)
         {
@@ -211,7 +224,7 @@ int main()
             continue;
         }
 
-        switch (choice)
+        switch (ch)
         {
         case 1:
         {
@@ -219,15 +232,13 @@ int main()
             try
             {
                 std::wcout << L"Введите путь к файлу: ";
-                if (!(std::wcin >> filePath))
-                {
-                    std::wcin.clear();
-                    std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
-                    std::wcout << L"Неверный ввод. Пожалуйста, введите число.\n";
+				std::getline(std::wcin, filePath);
+                if (std::wcin.fail()) {
+                    std::wcin.clear(); // Сбросить флаги ошибок
+                    std::wcin.sync();   // Очистить буфер
+                    std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                     continue;
                 }
-
-                std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
             }
             catch (const std::exception &e)
             {
@@ -263,7 +274,12 @@ int main()
             std::wstring filename;
             std::wcout << L"Введите имя файла для сохранения результатов: ";
             std::getline(std::wcin, filename);
-
+            if (std::wcin.fail()) {
+                std::wcin.clear(); // Сбросить флаги ошибок
+                std::wcin.sync();   // Очистить буфер
+                std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                continue;
+            }
             analyzer.saveResults(filename);
             break;
         }
@@ -271,12 +287,17 @@ int main()
         {
             std::wstring filename;
             try{
-            std::wcout << L"Введите имя файла для загрузки результатов: ";
-            std::getline(std::wcin, filename);
+                std::wcout << L"Введите имя файла для загрузки результатов: ";
+                std::getline(std::wcin, filename);
+                if (std::wcin.fail()) {
+                    std::wcin.clear(); // Сбросить флаги ошибок
+                    std::wcin.sync();   // Очистить буфер
+                    std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                    continue;
+                }
             }catch(const std::exception &e){
                 std::wcout << L"Неверный ввод. Пожалуйста, введите число.\n";
                 continue;
-
             }
             analyzer.loadResults(filename);
             break;
@@ -289,8 +310,20 @@ int main()
 
                 std::wcout << L"Введите первый идентификатор источника: ";
                 std::getline(std::wcin, sourceIdentifier1);
+                if (std::wcin.fail()) {
+                    std::wcin.clear(); // Сбросить флаги ошибок
+                    std::wcin.sync();   // Очистить буфер
+                    std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                    continue;
+                }
                 std::wcout << L"Введите второй идентификатор источника: ";
                 std::getline(std::wcin, sourceIdentifier2);
+                if (std::wcin.fail()) {
+                    std::wcin.clear(); // Сбросить флаги ошибок
+                    std::wcin.sync();   // Очистить буфер
+                    std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                    continue;
+                }
             }
             catch (const std::exception &e)
             {
@@ -303,20 +336,22 @@ int main()
         case 8:
         {
             wstring directory = chooseDirectory(analyzer);
+			if (directory.empty())
+				break;
             analyzer.analyzeDirectory(directory);
 
             std::wstring filename;
             try{
             std::wcout << L"Введите имя файла для сохранения результатов: ";
-            if (!(std::wcin >> filename))
-            {
-                std::wcin.clear();
+            std::getline(std::wcin, filename);
+            if (std::wcin.fail()) {
                 std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
-                std::wcout << L"Неверный ввод. Пожалуйста, введите число.\n";
+                std::wcin.sync();   // Очистить буфер
+                std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
                 continue;
             }
 
-            std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
+
             }catch(const std::exception &e){
                 std::wcout << L"Неверный ввод. Пожалуйста, введите число.\n";
                 continue;

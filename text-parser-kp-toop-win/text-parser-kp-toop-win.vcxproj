@@ -135,20 +135,19 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\main.cpp" />
-    <ClCompile Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\src\analysissettings.cpp" />
-    <ClCompile Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\src\filemanager.cpp" />
-    <ClCompile Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\src\textanalyzer.cpp" />
-    <ClCompile Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\src\utils.cpp" />
+    <ClCompile Include="analysissettings.cpp" />
+    <ClCompile Include="filemanager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="textanalyzer.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\include\analysissettings.h" />
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\include\analyzer.h" />
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\include\core.h" />
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\include\filemanager.h" />
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\include\textaanalyzer.h" />
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\include\utils.h" />
-    <ClInclude Include="..\..\..\Users\andrey\source\repos\text-parser-kp-toop\lib\tabulate.hpp" />
+    <ClInclude Include="analysissettings.h" />
+    <ClInclude Include="analyzer.h" />
+    <ClInclude Include="core.h" />
+    <ClInclude Include="filemanager.h" />
+    <ClInclude Include="textaanalyzer.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,8 +22,12 @@ namespace std {
         AnalysisSettings& operator=(const AnalysisSettings& other);
         AnalysisSettings& operator=(AnalysisSettings&& other) noexcept ;
 
+
         void changeRules(const wstring& rulesName, bool rulesValue);
         bool getRules(const wstring& rulesName) const;
+
+		void addToBackAlphabet(const wstring& stopWord);
+		void setNewAlphabet(const wstring& newAlphabet);
 
         // Новые методы для работы с директорией
         void setWorkingDirectory(const wstring& directory);

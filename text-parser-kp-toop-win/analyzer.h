@@ -17,7 +17,7 @@ namespace std{
         virtual void clearResults() = 0;
         virtual void saveResults(const wstring& filename) const = 0;
         virtual void loadResults(const wstring& filename) = 0;
-        virtual void compareResults(const wstring& sourceIdentifier1, const wstring& sourceIdentifier2) const = 0;
+        virtual void compareResults(const wstring& sourceIdentifier1, const wstring& sourceIdentifier2) = 0;
     };
 
 }

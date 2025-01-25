@@ -507,7 +507,77 @@ namespace std
             wcerr << L"ОШИБКА: " << e.what() << endl;
         }
     }
+    void TextAnalyzer::printMostlyAphabet() {
+        wstring alphabet;
+        wstring choice;
 
+        // Предложение выбора
+        std::wcout << L"Выберите действие:\n";
+        std::wcout << L"1. Добавить букву(буквы, слова)\n";
+        std::wcout << L"2. Заменить алфавит полностью\n";
+        std::wcout << L"Ваш выбор: ";
+        std::wcin >> choice;
+        if (!isValidString(choice)) {
+			std::wcin.clear(); // Сбросить флаги ошибок
+			std::wcin.sync();   // Очистить буфер
+			std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+			return;
+        }
+		int ch = std::stoi(choice);
+        // Обработка выбора
+        if (ch == 1)
+        {
+            wstring words;
+            wcout<< L"Введите букву(буквы, слова): ";
+            std::wcin.ignore(1000, L'\n');  // Фиксированное большое число
+            std::getline(std::wcin, words);
+            if (std::wcin.fail()) {
+                std::wcin.clear(); // Сбросить флаги ошибок
+                std::wcin.sync();   // Очистить буфер
+                std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                return;
+            }
+
+			if (words.empty())
+			{
+				std::wcerr << L"ОШИБКА: Неверный ввод. Пустая строка\n";
+				return;
+			}
+
+            std::wcout << L"В алфавит добавится следующее: " << words << L"\n";
+
+            settings.addToBackAlphabet(words);
+        }
+        else if (ch == 2)
+        {
+            wstring words;
+            wcout << L"Введите новый алфавит: ";
+            std::wcin.ignore(1000, L'\n');  // Фиксированное большое число
+            std::getline(std::wcin, words);
+
+            if (std::wcin.fail()) {
+                std::wcin.clear(); // Сбросить флаги ошибок
+                std::wcin.sync();   // Очистить буфер
+                std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                return;
+            }
+
+            if (words.empty())
+            {
+                std::wcerr << L"ОШИБКА: Неверный ввод. Пустая строка\n";
+                return;
+            }
+
+            std::wcout << L"В алфавит добавится следующее: " << words << L"\n";
+
+            settings.setNewAlphabet(words);
+        }
+        else
+        {
+            std::wcerr << L"ОШИБКА: Неверный выбор.\n";
+            alphabet.clear(); // Очищаем директорию, чтобы указать на ошибку
+        }
+    }
     void TextAnalyzer::changeSettings() {
         try {
             bool exit = false;
@@ -526,79 +596,82 @@ namespace std
                 wcout << L"6. Добавить стоп-слово\n";
                 wcout << L"Выберите опцию (или введите 0 для выхода): ";
 
-                int choice = -1;
+                wstring choice;
 
                 // Считываем выбор пользователя
                 wcin >> choice;
-
-                // Проверка на ошибки ввода
-                if (wcin.fail()) {
-                    wcin.clear(); // Очистка флага ошибки
-                    wcin.sync(); // Очистка буфера
-                    wcout << L"Некорректный ввод. Попробуйте снова.\n";
-                    continue;
+                if (!isValidString(choice)) {
+                    std::wcin.clear(); // Сбросить флаги ошибок
+                    std::wcin.sync();   // Очистить буфер
+                    std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                    return;
                 }
-
-                wcin.sync(); // Очистка оставшегося ввода
-
-                switch (choice) {
+                std::wcin.clear();
+                int ch = std::stoi(choice);
+                int sub_ch;
+                switch (ch) {
                 case 1:
                     wcout << L"Введите 1 для включения или 0 для выключения: ";
-                    wcin >> choice;
-                    if (wcin.fail()) {
-                        wcin.clear();
-                        wcin.sync();
-                        wcout << L"Некорректный ввод.\n";
-                        continue;
+                    std::wcin >> choice;
+                    if (!isValidString(choice)) {
+                        std::wcin.clear(); // Сбросить флаги ошибок
+                        std::wcin.sync();   // Очистить буфер
+                        std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                        return;
                     }
-                    settings.changeRules(L"caseInsensitive", (choice == 1));
+                    sub_ch = std::stoi(choice);
+                    settings.changeRules(L"caseInsensitive", (sub_ch == 1));
                     break;
                 case 2:
                     wcout << L"Введите 1 для включения или 0 для выключения: ";
-                    wcin >> choice;
-                    if (wcin.fail()) {
-                        wcin.clear();
-                        wcin.sync();
-                        wcout << L"Некорректный ввод.\n";
-                        continue;
+                    std::wcin >> choice;
+                    if (!isValidString(choice)) {
+                        std::wcin.clear(); // Сбросить флаги ошибок
+                        std::wcin.sync();   // Очистить буфер
+                        std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                        return;
                     }
-                    settings.changeRules(L"ignoreNumbers", (choice == 1));
+                    sub_ch = std::stoi(choice);
+                    settings.changeRules(L"ignoreNumbers", (sub_ch == 1));
                     break;
                 case 3:
                     wcout << L"Введите 1 для включения или 0 для выключения: ";
-                    wcin >> choice;
-                    if (wcin.fail()) {
-                        wcin.clear();
-                        wcin.sync();
-                        wcout << L"Некорректный ввод.\n";
-                        continue;
+                    std::wcin >> choice;
+                    if (!isValidString(choice)) {
+                        std::wcin.clear(); // Сбросить флаги ошибок
+                        std::wcin.sync();   // Очистить буфер
+                        std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                        return;
                     }
-                    settings.changeRules(L"ignoreSpecialChars", (choice == 1));
+                    sub_ch = std::stoi(choice);
+                    settings.changeRules(L"ignoreSpecialChars", (sub_ch == 1));
                     break;
                 case 4:
-                    wcout << L"Введите новый разрешенный алфавит: ";
-                    {
-                        wstring alphabet;
-                        getline(wcin, alphabet);
-                        settings.allowedAlphabet = alphabet;
-                    }
+                    printMostlyAphabet();
                     break;
                 case 5:
                     wcout << L"Введите 1 для включения или 0 для выключения: ";
-                    wcin >> choice;
-                    if (wcin.fail()) {
-                        wcin.clear();
-                        wcin.sync();
-                        wcout << L"Некорректный ввод.\n";
-                        continue;
+                    std::wcin >> choice;
+                    if (!isValidString(choice)) {
+                        std::wcin.clear(); // Сбросить флаги ошибок
+                        std::wcin.sync();   // Очистить буфер
+                        std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                        return;
                     }
-                    settings.changeRules(L"ignoreStopWords", (choice == 1));
+                    sub_ch = std::stoi(choice);
+                    settings.changeRules(L"ignoreStopWords", (sub_ch == 1));
                     break;
                 case 6: {
                     wcout << L"Введите новое стоп-слово: ";
                     wstring stopWord;
-                    getline(wcin, stopWord);
+                    std::getline(std::wcin, stopWord);
 
+                    if (std::wcin.fail()) {
+                        std::wcin.clear(); // Сбросить флаги ошибок
+                        std::wcin.sync();   // Очистить буфер
+                        std::wcout << L"Неверный ввод. Пожалуйста, введите строку.\n";
+                        continue;
+                    }
                     if (stopWord.empty()) {
                         wcout << L"Пусто (введите корректное стоп-слово).\n";
                         break;
@@ -802,8 +875,6 @@ namespace std
     void TextAnalyzer::loadResults(const wstring& filename) {
         try {
 
-
-
             wifstream file;
             // Создаем генератор локали Boost
             boost::locale::generator gen;
@@ -876,96 +947,218 @@ namespace std
             wcerr << L"ОШИБКА: " << e.what() << endl;
         }
     }
+    TextAnalyzer::result_vector TextAnalyzer::loadExternalResult(const wstring& filename) {
+        try{
+            wifstream file;
+            // Создаем генератор локали Boost
+            boost::locale::generator gen;
+            std::locale utf8_locale = gen("en_US.UTF-8");
 
-    void TextAnalyzer::compareResults(const wstring &sourceIdentifier1, const wstring &sourceIdentifier2) const
+            // Устанавливаем локаль для файла
+            file.imbue(utf8_locale);
+
+            // Открываем файл
+            file.open(filename);
+
+            if (!file.is_open()) {
+                wcerr << L"ОШИБКА: Не удалось открыть файл для чтения: " << filename << endl;
+                return {};
+            }
+
+            result_vector result;
+
+            wstring line;
+            AnalysisResult currentResults;
+            wstring currentSource;
+
+            while (getline(file, line)) {
+                wcout << L"Прочитанная строка: [" << line << L"]" << endl;
+
+                // Начало нового блока результатов
+                if (line.find(L"=== Результаты для источника: ") != wstring::npos) {
+                    if (!currentSource.empty()) {
+                        result.push_back(currentResults);
+                        currentResults = AnalysisResult(); // Сброс текущих результатов
+                    }
+
+                    // Извлечение имени источника
+                    size_t start = line.find(L": ") + 2;
+                    size_t end = line.find(L" ===");
+                    currentSource = line.substr(start, end - start);
+                    currentResults.sourceIdentifier = currentSource;
+                }
+                // Обработка топовых слов (частот)
+                else if (line.find(L"Топ") != wstring::npos && line.find(L"самых часто встречающихся слов:") != wstring::npos) {
+                    // Пропускаем строку с заголовком и начинаем читать слова
+                    while (getline(file, line)) {
+                        if (line.empty()) {
+                            break; // Завершаем, если достигли пустой строки
+                        }
+                        // Обработка строки с частотой слова
+                        wregex wordRegex(L"  (.+?): (\\d+) раз");
+                        wsmatch wordMatch;
+                        if (regex_search(line, wordMatch, wordRegex)) {
+                            wstring word = wordMatch[1]; // Само слово
+                            int count = stoi(wordMatch[2]); // Частота
+                            currentResults.wordFrequency[word] = count;
+                        }
+                    }
+                }
+                // Обработка топовых слов (длина)
+                else if (line.find(L"Топ") != wstring::npos && line.find(L"самых длинных слов:") != wstring::npos) {
+                    // Пропускаем строку с заголовком и начинаем читать слова
+                    while (getline(file, line)) {
+                        if (line.empty()) {
+                            break; // Завершаем, если достигли пустой строки
+                        }
+                        // Обработка строки с длинным словом
+                        wregex wordRegex(L"  (.+?) \\(длина: (\\d+)\\)");
+                        wsmatch wordMatch;
+                        if (regex_search(line, wordMatch, wordRegex)) {
+                            wstring word = wordMatch[1]; // Само слово
+                            size_t length = stoi(wordMatch[2]); // Длина слова
+                            currentResults.wordsByLength[length].insert(word); // Добавляем в map
+                        }
+                    }
+                }
+                // Обработка количества предложений
+                else if (line.find(L"Количество предложений:") != wstring::npos) {
+                    wregex regex(L"Количество предложений: (\\d+)");
+                    wsmatch match;
+                    if (regex_search(line, match, regex)) {
+                        currentResults.sentenceCount = stoi(match[1]);
+                    }
+                }
+            }
+
+            // Добавление последнего блока результатов
+            if (!currentSource.empty()) {
+                result.push_back(currentResults);
+            }
+
+            file.close();
+            wcout << L"Результаты успешно загружены из файла: " << filename << endl;
+            return result;
+        }
+        catch (const exception& e) {
+            wcerr << L"ОШИБКА: " << e.what() << endl;
+        }
+    }
+    // Функция для парсинга строки с длинными словами
+    void TextAnalyzer::parseLongestWords(const wstring& line, map<size_t, set<wstring>>& wordsByLength) {
+        size_t length;
+        wstring word;
+        wstringstream ss(line);
+        ss >> word >> length;
+        wordsByLength[length].insert(word);
+    }
+
+    // Функция для парсинга строки с частотой слов
+    void TextAnalyzer::parseWordFrequency(const wstring& line, map<wstring, int>& wordFrequency) {
+        wstringstream ss(line);
+        wstring word;
+        int count;
+        wchar_t colon;
+        ss >> word >> colon >> count;
+        wordFrequency[word] = count;
+    }
+
+    // Функция для парсинга файла с результатами анализа
+    TextAnalyzer::AnalysisResult TextAnalyzer::parseAnalysisResult(const wstring& filename) {
+        AnalysisResult result;
+        wifstream file;
+        // Создаем генератор локали Boost
+        boost::locale::generator gen;
+        std::locale utf8_locale = gen("en_US.UTF-8");
+
+        // Устанавливаем локаль для файла
+        file.imbue(utf8_locale);
+
+        // Открываем файл
+        file.open(filename);
+
+        wstring line;
+
+        while (getline(file, line)) {
+            if (line.find(L"=== Результаты для источника:") != wstring::npos) {
+                result.sourceIdentifier = line.substr(line.find(L":") + 2);
+            }
+            else if (line.find(L"Количество предложений:") != wstring::npos) {
+                result.sentenceCount = stoi(line.substr(line.find(L":") + 2));
+            }
+            else if (line.find(L"раз") != wstring::npos) {
+                parseWordFrequency(line, result.wordFrequency);
+            }
+            else if (line.find(L"(длина:") != wstring::npos) {
+                parseLongestWords(line, result.wordsByLength);
+            }
+        }
+
+        return result;
+    }
+    void TextAnalyzer::compareResults(const wstring &sourceIdentifier1, const wstring &sourceIdentifier2)
     {
         try
         {
-            const AnalysisResult *results1 = nullptr;
-            const AnalysisResult *results2 = nullptr;
-
-            // Поиск результатов для первого источника
-            for (const auto &result : results)
-            {
-                if (result.sourceIdentifier == sourceIdentifier1)
-                {
-                    results1 = &result;
-                    break;
-                }
-            }
-
-            // Поиск результатов для второго источника
-            for (const auto &result : results)
-            {
-                if (result.sourceIdentifier == sourceIdentifier2)
-                {
-                    results2 = &result;
-                    break;
-                }
-            }
-
-            if (!results1 || !results2)
-            {
-                wcerr << L"ОШИБКА: Не удалось найти результаты для одного из источников." << endl;
+            auto res_line1 = loadExternalResult(sourceIdentifier1);
+            if (res_line1.size() == 0) {
+                std::wcout << "Не удалось прочитать данные" << std::endl;
                 return;
             }
+            auto res_line2 = loadExternalResult(sourceIdentifier2);
+            if (res_line2.size() == 0) {
+                std::wcout << "Не удалось прочитать данные" << std::endl;
+                return;
+            }
+            for (size_t i = 0, j = 0; i < res_line1.size(); i++, j++) {
+                // Сравнение количества предложений
+                wcout << L"\n=== Сравнение количества предложений ===\n";
+                wcout << res_line1[i].sourceIdentifier << L": " << res_line1[i].sentenceCount << L" предложений\n";
+                wcout << res_line2[i].sourceIdentifier << L": " << res_line2[i].sentenceCount << L" предложений\n";
+                wcout << L"Разница: " << abs(res_line1[i].sentenceCount - res_line2[i].sentenceCount) << L" предложений\n";
 
-            // Сравнение количества предложений
-            wcout << L"\n=== Сравнение количества предложений ===\n";
-            wcout << sourceIdentifier1 << L": " << results1->sentenceCount << L" предложений\n";
-            wcout << sourceIdentifier2 << L": " << results2->sentenceCount << L" предложений\n";
-            wcout << L"Разница: " << abs(results1->sentenceCount - results2->sentenceCount) << L" предложений\n";
-
-            // Сравнение частот слов
-            wcout << L"\n=== Сравнение частот слов ===\n";
-            map<wstring, int> commonWords;
-            for (const auto &[word, count] : results1->wordFrequency)
-            {
-                if (results2->wordFrequency.find(word) != results2->wordFrequency.end())
-                {
-                    commonWords[word] = abs(count - results2->wordFrequency.at(word));
+                // Сравнение частот слов
+                wcout << L"\n=== Сравнение частот слов ===\n";
+                map<wstring, int> commonWords;
+                for (const auto& [word, count] : res_line1[i].wordFrequency) {
+                    if (res_line2[i].wordFrequency.find(word) != res_line2[i].wordFrequency.end()) {
+                        commonWords[word] = abs(count - res_line2[i].wordFrequency.at(word));
+                    }
                 }
-            }
 
-            if (!commonWords.empty())
-            {
-                wcout << L"Слова с наибольшей разницей в частоте:\n";
-                vector<pair<wstring, int>> sortedCommonWords(commonWords.begin(), commonWords.end());
-                sort(sortedCommonWords.begin(), sortedCommonWords.end(),
-                          [](const auto &a, const auto &b)
-                          { return a.second > b.second; });
+                if (!commonWords.empty()) {
+                    wcout << L"Слова с наибольшей разницей в частоте:\n";
+                    vector<pair<wstring, int>> sortedCommonWords(commonWords.begin(), commonWords.end());
+                    sort(sortedCommonWords.begin(), sortedCommonWords.end(),
+                        [](const auto& a, const auto& b) { return a.second > b.second; });
 
-                for (size_t i = 0; i < min(sortedCommonWords.size(), size_t(5)); ++i)
-                {
-                    wcout << L"  " << sortedCommonWords[i].first << L": разница " << sortedCommonWords[i].second << L"\n";
+                    for (size_t i = 0; i < min(sortedCommonWords.size(), size_t(5)); ++i) {
+                        wcout << L"  " << sortedCommonWords[i].first << L": разница " << sortedCommonWords[i].second << L"\n";
+                    }
                 }
-            }
-            else
-            {
-                wcout << L"Нет общих слов для сравнения.\n";
-            }
+                else {
+                    wcout << L"Нет общих слов для сравнения.\n";
+                }
 
-            // Сравнение самых длинных слов
-            wcout << L"\n=== Сравнение самых длинных слов ===\n";
-            auto longestWords1 = results1->wordsByLength.rbegin()->second;
-            auto longestWords2 = results2->wordsByLength.rbegin()->second;
+                // Сравнение самых длинных слов
+                wcout << L"\n=== Сравнение самых длинных слов ===\n";
+                auto longestWords1 = res_line1[i].wordsByLength.rbegin()->second;
+                auto longestWords2 = res_line2[i].wordsByLength.rbegin()->second;
 
-            wcout << sourceIdentifier1 << L": ";
-            for (const auto &word : longestWords1)
-            {
-                wcout << word << L" ";
-            }
-            wcout << L"\n";
+                wcout << res_line1[i].sourceIdentifier << L": ";
+                for (const auto& word : longestWords1) {
+                    wcout << word << L" ";
+                }
+                wcout << L"\n";
 
-            wcout << sourceIdentifier2 << L": ";
-            for (const auto &word : longestWords2)
-            {
-                wcout << word << L" ";
+                wcout << res_line2[i].sourceIdentifier << L": ";
+                for (const auto& word : longestWords2) {
+                    wcout << word << L" ";
+                }
+                wcout << L"\n";
             }
-            wcout << L"\n";
         }
-        catch (const exception &e)
-        {
+        catch (const exception& e) {
             wcerr << L"ОШИБКА: " << e.what() << endl;
         }
     }

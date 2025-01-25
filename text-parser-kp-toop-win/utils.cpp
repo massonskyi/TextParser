@@ -41,4 +41,21 @@ namespace std {
     std::wcout << L"] " << std::fixed << std::setprecision(2) << (progress * 100.0) << L"%";
     std::wcout.flush(); // Очистка буфера вывода
 }
+
+    bool isValidString(std::wstring& command) {
+        if (command.empty()) {
+            return false;
+        }
+        try {
+            // Попытка преобразовать строку в число
+            auto x = std::stoi(command);
+            return true; // Если преобразование успешно, выходим из цикла
+        }
+        catch (const std::invalid_argument&) {
+            return false;
+        }
+        catch (const std::out_of_range&) {
+            return false;
+        }
+    }
 }
